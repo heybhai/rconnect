@@ -28,3 +28,5 @@ dim(mergedata) #checking dimension of data
 colnames(mergedata)
 head(mergedata,2)
 
+apply(mergedata,2,function(x)length(unique(x)))
+

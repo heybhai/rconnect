@@ -45,7 +45,7 @@ mg1 <-
 mg1 <-
   arrange(mg1, desc(mg1$`sum(as.numeric(unlist(epc)), na.rm = TRUE)`))
 
-#computing no of sessions per pageview
+#computing no of pageview per sessions
 length(unique(mergedata$pageviewid)) / length(unique(mergedata$sessionid)) 
 
 #comparing epc for desktop vs mobile/tabs
@@ -64,3 +64,8 @@ mg3 <- arrange(mg3, desc(mg3$`sum(as.numeric(unlist(epc)), na.rm = TRUE)`))
 mg4 <-
   mergedata %>% group_by(deleted) %>% summarise(sum(as.numeric(unlist(epc)), na.rm = TRUE))
 mg4 <- arrange(mg4, desc(mg4$`sum(as.numeric(unlist(epc)), na.rm = TRUE)`))
+
+#computing avg no of different cards per pageview
+length(unique(mergedata$id.x) / length(unique(mergedata$pageviewid)))
+
+       

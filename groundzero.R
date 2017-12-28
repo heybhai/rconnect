@@ -50,3 +50,28 @@ colnames(mergedata)
 min(which(as.numeric(mergedata$epc) >0))
 
 gc()
+sapply(data2, class)
+sapply(data1,class)
+sapply(mergedata, class)
+
+#unique epc
+unepc <- unique(mergedata$epc)
+unepcnum <- as.numeric(levels(unepc))[unepc] #factors to numeric coersion
+
+
+unepc_old <- unique(data2$epc)
+unepc_oldnum <- as.numeric(levels(unepc_old))[unepc_old]
+
+
+mergedata_copy <- mergedata
+mergedata_copy$epc <- as.numeric(levels(mergedata_copy$epc))[mergedata_copy$epc]
+mergedata_copy$epc[is.na(mergedata_copy$epc)] <- 0
+unepc_cpy <- unique(mergedata_copy$epc)
+#mergedata_copy$epc_fac<- if(mergedata_copy$epc > 0){mergedata_copy$epc_fac =1} else {mergedata_copy$epc_fac =0}
+mergedata_copy$epc_fac <-mergedata_copy$epc
+mergedata_copy$epc_fac[mergedata_copy$epc_fac > 0] <- 1
+mergedata_copy$epc_fac[mergedata_copy$epc_fac == 0] <- 0
+mergedata_copy$epc_fac <- factor(mergedata_copy$epc_fac)
+sapply(mergedata_copy, class)
+waste<- subset(mergedata_copy, epc_fac == 0)
+good<- subset(mergedata_copy, epc_fac != 0)

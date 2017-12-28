@@ -26,7 +26,7 @@
  rowitem <- rownames(c)
  columnitem <- colnames(c)
  correlation_mat <- c[order(as.numeric(rowitem)),order(as.numeric(columnitem))]
- for(i in 1:q
+ for(i in 1:9822
      ) {
   correlation_mat[i,] <- correlation_mat[i,]/correlation_mat[i,i]
 }

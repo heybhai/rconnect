@@ -1,4 +1,6 @@
-install.packages('simsalapar')
+#install.packages('simsalapar')
+library(simsalapar)
+library(readxl)
 newfile<- read_xlsx("E:/Machine Learning A-Z/metastate.csv/Offer name & ID.xlsx")
 head(newfile)
 htmlString <- mergedata$value.x
@@ -62,6 +64,7 @@ unepcnum <- as.numeric(levels(unepc))[unepc] #factors to numeric coersion
 unepc_old <- unique(data2$epc)
 unepc_oldnum <- as.numeric(levels(unepc_old))[unepc_old]
 
+cc<-unique(mergedata_copy$pageviewid)
 
 mergedata_copy <- mergedata
 mergedata_copy$epc <- as.numeric(levels(mergedata_copy$epc))[mergedata_copy$epc]
@@ -75,3 +78,48 @@ mergedata_copy$epc_fac <- factor(mergedata_copy$epc_fac)
 sapply(mergedata_copy, class)
 waste<- subset(mergedata_copy, epc_fac == 0)
 good<- subset(mergedata_copy, epc_fac != 0)
+
+#finding epc per pageview for mergedata
+length(unique(good$pageviewid))
+tt<- ddply(good, .(pageviewid), nrow)
+goodmerge <- merge(good,tt,by = c("pageviewid"))
+goodmerge$realepc <- goodmerge$epc/goodmerge$V1
+sum(goodmerge$realepc) #1861.9 (around 3% of original epc)
+
+#test of adding offername and offerid as sent in 3rd file seperately
+
+gdrepcsrt<-goodmerge %>% group_by(offer.y) %>% summarise(sum(realepc), na.rm = TRUE)
+gdrepcsrt <- arrange(gdrepcsrt, desc(gdrepcsrt$`sum(realepc)`, na.rm = TRUE))
+
+gdrepcsrt_mul<-goodmerge %>% group_by(offer.y,date) %>% summarise(sum(realepc), na.rm = TRUE)
+#by revenue
+gdrepcsrt_mul <- arrange(gdrepcsrt_mul, desc(gdrepcsrt_mul$`sum(realepc)`, na.rm = TRUE))
+#by date
+gdrepcsrt_mul <- arrange(gdrepcsrt_mul, desc(gdrepcsrt_mul$date, na.rm = TRUE))
+
+
+
+
+#finding epc per pageview for spot data
+length(unique(data2$pageviewid))
+ttt<- ddply(data2, .(pageviewid), nrow)
+spotmerge <- merge(data2,ttt,by = c("pageviewid"))
+spotmerge$epc <- as.numeric(levels(spotmerge$epc))[spotmerge$epc]
+spotmerge$epc[is.na(spotmerge$epc)] <- 0
+spotmerge$realepc <- spotmerge$epc/spotmerge$V1
+sum(spotmerge$realepc) # 69573.72
+
+
+
+
+pgvepc<-mergedata_copy %>% group_by(pageviewid) %>% summarise(sum(epc), na.rm = TRUE)
+pgvepc <- arrange(pgvepc, desc(pgvepc$`sum(epc)`, na.rm = TRUE))
+
+
+pgvepc_g<-good %>% group_by(pageviewid) %>% summarise(sum(epc))
+pgvepc_g <- arrange(pgvepc_g, desc(pgvepc_g$`sum(epc)`))
+
+pgvepc_g_mul<-good %>% group_by(pageviewid,date) %>% summarise(sum(epc))
+pgvepc_g_mul <- arrange(pgvepc_g, desc(pgvepc_g$`sum(epc)`))
+
+suspicious<- good[good$pageviewid ==  '435747556a694892b6db152eeae09c14',]

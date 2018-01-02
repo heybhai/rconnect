@@ -102,24 +102,32 @@ gdrepcsrt_mul <- arrange(gdrepcsrt_mul, desc(gdrepcsrt_mul$date, na.rm = TRUE))
 
 #finding epc per pageview for spot data
 length(unique(data2$pageviewid))
-ttt<- ddply(data2, .(pageviewid), nrow)
-spotmerge <- merge(data2,ttt,by = c("pageviewid"))
+ttt<- ddply(mergedata_copy, .(pageviewid), nrow)
+spotmerge <- merge(mergedata_copy,ttt,by = c("pageviewid"))
 spotmerge$epc <- as.numeric(levels(spotmerge$epc))[spotmerge$epc]
 spotmerge$epc[is.na(spotmerge$epc)] <- 0
 spotmerge$realepc <- spotmerge$epc/spotmerge$V1
 sum(spotmerge$realepc) # 69573.72
 
+gdrepcsrt_mul<-goodmerge %>% group_by(offer.y,date) %>% summarise(sum(realepc), na.rm = TRUE)
+#by revenue
+gdrepcsrt_mul <- arrange(gdrepcsrt_mul, desc(gdrepcsrt_mul$`sum(realepc)`, na.rm = TRUE))
+#by date
+gdrepcsrt_mul <- arrange(gdrepcsrt_mul, desc(gdrepcsrt_mul$date, na.rm = TRUE))
+
+dt1<- data.table(mergedata_copy, key= 'pageviewid')
+dt2<- data.tab
+
+# pgvepc<-mergedata_copy %>% group_by(pageviewid) %>% summarise(sum(epc), na.rm = TRUE)
+# pgvepc <- arrange(pgvepc, desc(pgvepc$`sum(epc)`, na.rm = TRUE))
+# 
+# 
+# pgvepc_g<-good %>% group_by(pageviewid) %>% summarise(sum(epc))
+# pgvepc_g <- arrange(pgvepc_g, desc(pgvepc_g$`sum(epc)`))
+# 
+# pgvepc_g_mul<-good %>% group_by(pageviewid,date) %>% summarise(sum(epc))
+# pgvepc_g_mul <- arrange(pgvepc_g, desc(pgvepc_g$`sum(epc)`))
+# 
+# suspicious<- good[good$pageviewid ==  '435747556a694892b6db152eeae09c14',]
 
 
-
-pgvepc<-mergedata_copy %>% group_by(pageviewid) %>% summarise(sum(epc), na.rm = TRUE)
-pgvepc <- arrange(pgvepc, desc(pgvepc$`sum(epc)`, na.rm = TRUE))
-
-
-pgvepc_g<-good %>% group_by(pageviewid) %>% summarise(sum(epc))
-pgvepc_g <- arrange(pgvepc_g, desc(pgvepc_g$`sum(epc)`))
-
-pgvepc_g_mul<-good %>% group_by(pageviewid,date) %>% summarise(sum(epc))
-pgvepc_g_mul <- arrange(pgvepc_g, desc(pgvepc_g$`sum(epc)`))
-
-suspicious<- good[good$pageviewid ==  '435747556a694892b6db152eeae09c14',]

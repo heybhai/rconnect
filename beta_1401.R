@@ -33,8 +33,8 @@ while(!is.null(next_page)){
 }
 
 data2<- read.csv("E:/Machine Learning A-Z/metastate.csv/api_metastate.csv/pageviews.csv")
-data3<- data2[!apply(data2 == "", 1, all),] # removed empty rows from data2
-data4 <- data3[-(grep("[a-zA-Z]",data3$id)), ] #removed characters from id 
+data3<- data2[!apply(data2 == "", 1, all),] # removes empty rows from data2
+data4 <- data3[-(grep("[a-zA-Z]",data3$id)), ] #removes characters from id 
 gc()
 
 data_table_1 <- data.table(data_api, key= "pageviewid")
@@ -42,7 +42,6 @@ data_table_2 <- data.table(data4, key= "pageviewid")
 system.time(dt.merged <- merge(data_table_1, data_table_2))
 gc()
 
-dt.merged<- mergedata_copy #creating a copy of data
 dt.merged$epc <- as.numeric(levels(dt.merged$epc))[dt.merged$epc]
 gc()
 dt.merged$epc[is.na(dt.merged$epc)] <- 0

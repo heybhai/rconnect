@@ -14,11 +14,12 @@ library(plyr)
 library(dplyr)
 library(httr)
 library(lubridate)
-library(libcurl)
+library(curl)
 library(h2o)
 
-localH2o <- h2o.init(nthreads = -1) #doesn't work with Java 9 , try 8 or lower version
-h2o.init(ip ='localhost', port =54321, nthreads = -1, max_mem_size =  '4g')
+#localH2o <- h2o.init(nthreads = -1) #doesn't work with Java 9 , try 8 or lower version
+localH2o <- h2o.init(ip ='localhost', port =54321, nthreads = -1, max_mem_size =  '4g')
+h2o.startLogging()
 
 query <- "https://sdfhjjnpgc.execute-api.ap-southeast-2.amazonaws.com/prod/api/metafields/?"
 getdata<-GET(url=query, add_headers(Authorization="Token 8e70597d2eec1c4cdb0a1f260a1756e3d24396d8")) %>% stop_for_status() %>% json_parse
@@ -47,9 +48,20 @@ gc()
 dt.merged$epc[is.na(dt.merged$epc)] <- 0
 gc()
 
+nondeleteddata <- dt.merged[dt.merged$deleted== 0, ]
 
 # split the data 80% train/20% test
-splitdata<- sample.int(n=nrow(dt.merged),size=floor(.8*nrow(dt.merged)),replace = F)
-data_train <- dt.merged[splitdata, ]
-data_test <- dt.merged[-splitdata, ]
+splitdata<- sample.int(n=nrow(nondeleteddata),size=floor(.8*nrow(nondeleteddata)),replace = F)
+data_train <- nondeleteddata[splitdata, ]
+data_test <- nondeleteddata[-splitdata, ]
 gc()
+
+
+data.out<- write.csv(nondeleteddata,file = "E:/Machine Learning A-Z/metastate.csv/api_metastate.csv/nondeldata.csv")
+pathd <- "E:/Machine Learning A-Z/metastate.csv/api_metastate.csv/nondeldata.csv"
+data.hex <- h2o.importFile(path = pathd, destination_frame = "nondel.hex")
+
+h2o.shutdown(prompt = TRUE)
+
+paths <- "E:/Machine Learning A-Z/metastate.csv/api_metastate.csv/api_metastate.csv"
+data2.hex <- h2o.importFile(path = paths, destination_frame = "pg.hex")

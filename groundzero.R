@@ -119,7 +119,7 @@ dt1<- data.table(mergedata_copy, key= 'pageviewid')
 dt2<- data.tab
 
 # pgvepc<-mergedata_copy %>% group_by(pageviewid) %>% summarise(sum(epc), na.rm = TRUE)
-# pgvepc <- arrange(pgvepc, desc(pgvepc$`sum(epc)`, na.rm = TRUE))
+-# pgvepc <- arrange(pgvepc, desc(pgvepc$`sum(epc)`, na.rm = TRUE))
 # 
 # 
 # pgvepc_g<-good %>% group_by(pageviewid) %>% summarise(sum(epc))
@@ -131,3 +131,7 @@ dt2<- data.tab
 # suspicious<- good[good$pageviewid ==  '435747556a694892b6db152eeae09c14',]
 
 
+data_3001 <- read.csv("E:/Machine Learning A-Z/metastate.csv/api_metastate.csv/spot_010118-140118.csv")
+summary(data_3001)
+colnames(data_3001)
+unique(data_3001$Visitor.Type..GA.)
